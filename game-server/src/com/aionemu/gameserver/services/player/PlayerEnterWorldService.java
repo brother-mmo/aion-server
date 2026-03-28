@@ -61,6 +61,7 @@ import com.aionemu.gameserver.services.mail.MailService;
 import com.aionemu.gameserver.services.panesterra.PanesterraService;
 import com.aionemu.gameserver.services.reward.AdventService;
 import com.aionemu.gameserver.services.reward.VeteranRewardService;
+import com.aionemu.gameserver.services.hub.HubLoginRoutingService;
 import com.aionemu.gameserver.services.teleport.BindPointTeleportService;
 import com.aionemu.gameserver.services.teleport.TeleportService;
 import com.aionemu.gameserver.services.toypet.PetService;
@@ -194,10 +195,11 @@ public final class PlayerEnterWorldService {
 		log.info("Player " + player.getName() + " (" + account + ") logged on");
 		pcd.setInEditMode(false);
 
+		boolean usedHubLoginRouting = HubLoginRoutingService.routePlayerOnLogin(player);
 		World.getInstance().storeObject(player);
 
 		// change player position if he isn't allowed to spawn in the current zone
-		if (validateFortressZone(player)) // only check vortex zone if fortress check was ok (otherwise, the player is already set to bind point)
+		if (!usedHubLoginRouting && validateFortressZone(player)) // only check vortex zone if fortress check was ok (otherwise, the player is already set to bind point)
 			validateVortexZone(player);
 
 		// if player skipped some levels offline, learn missing skills and stuff

@@ -1,0 +1,29 @@
+services:
+  aion-db:
+    image: mariadb:11.4
+    container_name: aion-local-db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      AION_DB_USER: aion
+      AION_DB_PASSWORD: aion
+      AION_GS_ID: "1"
+      AION_GS_MASK: 127.0.0.1
+      AION_GS_PASSWORD: 1234
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - aion-db-data:/var/lib/mysql
+      - ./docker/db/init:/docker-entrypoint-initdb.d:ro
+      - ./login-server/sql:/srv/aion/sql/login:ro
+      - ./game-server/sql:/srv/aion/sql/game:ro
+      - ./chat-server/sql:/srv/aion/sql/chat:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -uroot -p$$MARIADB_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+volumes:
+  aion-db-data:
