@@ -23,14 +23,17 @@ public final class HubLoginRoutingService {
 			return false;
 		}
 
+		if (HubConfig.HUB_LOGIN_INSTANCE_ENABLED)
+			return HubInstanceRoutingService.routePlayerOnLogin(player);
+
 		try {
 			World.getInstance().setPosition(player, HubConfig.HUB_LOGIN_WORLD_ID, HubConfig.HUB_LOGIN_X, HubConfig.HUB_LOGIN_Y, HubConfig.HUB_LOGIN_Z,
 				HubConfig.HUB_LOGIN_HEADING);
-			log.info("Using hub login routing for {} -> mapId={}, x={}, y={}, z={}, heading={}.", player, HubConfig.HUB_LOGIN_WORLD_ID, HubConfig.HUB_LOGIN_X,
-				HubConfig.HUB_LOGIN_Y, HubConfig.HUB_LOGIN_Z, HubConfig.HUB_LOGIN_HEADING);
+			log.info("Using legacy hub world login routing for {} -> mapId={}, x={}, y={}, z={}, heading={}.", player, HubConfig.HUB_LOGIN_WORLD_ID,
+				HubConfig.HUB_LOGIN_X, HubConfig.HUB_LOGIN_Y, HubConfig.HUB_LOGIN_Z, HubConfig.HUB_LOGIN_HEADING);
 			return true;
 		} catch (RuntimeException ex) {
-			log.error("Hub login routing failed for {}. Falling back to classic login flow.", player, ex);
+			log.error("Legacy hub world login routing failed for {}. Falling back to classic login flow.", player, ex);
 			return false;
 		}
 	}
